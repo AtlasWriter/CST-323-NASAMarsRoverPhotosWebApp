@@ -2,16 +2,14 @@ package com.cst323.controller;
 
 import java.lang.reflect.InvocationTargetException;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.thymeleaf.util.StringUtils;
 
 import com.cst323.entity.MarsPhotoEntity;
 import com.cst323.response.MarsRoverApiResponse;
@@ -22,12 +20,14 @@ import com.cst323.service.NasaMarsRoverApiService;
 @Controller
 public class HomeController {
 
+	Logger logger = LoggerFactory.getLogger(HomeController.class);
+
 	/*
 	 * @Autowired is used to automatically inject the NasaMarsRoverApiService
 	 * dependency into this class. Spring will try to find a bean of
 	 * NasaMarsRoverApiService type in the application context and assign it to the
-	 * roverService field. This way, I don’t have to manually create an instance
-	 * of NasaMarsRoverApiService using the new keyword.
+	 * roverService field. This way, I don’t have to manually create an instance of
+	 * NasaMarsRoverApiService using the new keyword.
 	 * 
 	 */
 	@Autowired
@@ -51,6 +51,8 @@ public class HomeController {
 	@GetMapping("/")
 	public String getHomeView(ModelMap model, Long userId, Boolean createUser)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		logger.trace("Trace Level: Fetches Mars Rover data based on the userId and adds it to the model.");
+		logger.info("Info Level: Fetches Mars Rover data based on the userId and adds it to the model.");
 		MarsPhotoEntity photoEntity = createDefaultPhotoEntity(userId);
 
 		if (Boolean.TRUE.equals(createUser) && userId == null) {
@@ -90,6 +92,9 @@ public class HomeController {
 	@GetMapping("/savedPreferences")
 	@ResponseBody
 	public MarsPhotoEntity getSavedPreferences(Long userId) {
+		logger.info("The method takes a userId as a parameter. If userId is not null, it calls the\r\n"
+				+ "	roverService.findByUserId(userId) method to fetch the MarsPhotoEntity\r\n"
+				+ "	associated with that userId.");
 		if (userId != null)
 			return roverService.findByUserId(userId);
 		else
@@ -135,6 +140,16 @@ public class HomeController {
 	 */
 	@PostMapping("/")
 	public String postHomeView(MarsPhotoEntity photoEntity) {
+		logger.trace(
+				" It calls the roverService.save(photoEntity) method to save the photoEntity. "
+				+ "The save method should persist the photoEntity to a database and return the persisted entity. "
+				+ "The returned entity is then assigned back to the photoEntity variable. "
+				+ "It returns a redirect view to the root (“/”) endpoint with a userId query parameter.");
+		logger.debug("The value of the userId parameter is the userId of the\r\n"
+				+ " photoEntity. This method is typically used to handle form submissions. When a\r\n"
+				+ "	form is submitted with a MarsPhotoEntity, this method will save the entity\r\n"
+				+ "	and then redirect the user back to the home view, passing along the userId as\r\n"
+				+ "	a query parameter.");
 		photoEntity = roverService.save(photoEntity);
 		return "redirect:/?userId=" + photoEntity.getUserId();
 	}

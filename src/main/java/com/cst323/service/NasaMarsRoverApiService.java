@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import com.cst323.response.MarsRoverApiResponse;
 
 @Service
 public class NasaMarsRoverApiService {
+	
+	Logger logger = LoggerFactory.getLogger(NasaMarsRoverApiService.class);
 
 	/*
 	 * it’s a good practice to inject a @Repository into a @Service and then inject
@@ -69,6 +73,9 @@ public class NasaMarsRoverApiService {
 	 */
 	public MarsRoverApiResponse getRoverData(MarsPhotoEntity photoEntity)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		logger.error("These exceptions would typically be thrown by the\r\n"
+				+ "	getApiUrlEnpoints(photoEntity) method if it uses reflection to dynamically\r\n"
+				+ "	invoke methods based on the photoEntity.");
 		RestTemplate rt = new RestTemplate();
 
 		List<String> apiUrlEnpoints = getApiUrlEnpoints(photoEntity);
@@ -87,6 +94,7 @@ public class NasaMarsRoverApiService {
 
 	public List<String> getApiUrlEnpoints(MarsPhotoEntity photoEntity)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		logger.trace("Trace: Java Reflection and data service call");
 		List<String> urls = new ArrayList<>();
 
 		// I wanted to try Java Reflection as I have read about it on my spare time.
